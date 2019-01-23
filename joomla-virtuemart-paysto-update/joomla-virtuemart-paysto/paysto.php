@@ -112,15 +112,15 @@ class plgVMPaymentPaysto extends vmPSPlugin
             'LMI_MERCHANT_ID' => $method->merchant_id,
             'LMI_CURRENCY' => $currency_code_3,
             'LMI_PAYER_EMAIL' => $order['details']['BT']->email,
-            'LMI_PAYMENT_NOTIFICATION_URL' => JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&action=paymaster_result'),
-            'LMI_SUCCESS_URL' => JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&action=paymaster_success'),
+            'LMI_PAYMENT_NOTIFICATION_URL' => JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&action=paysto_result'),
+            'LMI_SUCCESS_URL' => JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&action=paysto_success'),
             'LMI_FAILURE_URL' => JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&on=' . $order['details']['BT']->order_number . '&pm=' . $order['details']['BT']->virtuemart_paymentmethod_id),
             'sign' => md5($amount . $order['details']['BT']->virtuemart_order_id . $method->secret_key),
         );
 
         $order_check = array_merge($order_check, $fields);
         //$this->pre($order_check);exit;
-        $form = '<form method="POST" action="https://paymaster.ru/Payment/Init" name="vm_paymaster_form">';
+        $form = '<form method="POST" action="https://paysto.ru/Payment/Init" name="vm_paysto_form">';
 
         foreach ($order_check as $key => $value) {
             $form .= '<input type="hidden" name="' . $key . '" value="' . $value . '">';
@@ -129,7 +129,7 @@ class plgVMPaymentPaysto extends vmPSPlugin
         $form .= '</form>';
 
         $form .= ' <script type="text/javascript">';
-        $form .= ' document.vm_paymaster_form.submit();';
+        $form .= ' document.vm_paysto_form.submit();';
         $form .= ' </script>';
 
         $this->processConfirmedOrderPaymentResponse(2, $cart, $order, $form, $method->payment_name, $new_status);
@@ -256,7 +256,7 @@ class plgVMPaymentPaysto extends vmPSPlugin
     {
         $img = "";
         if (!(empty($logo_list))) {
-            $url = JURI::root() . 'plugins/vmpayment/paymaster/images/';
+            $url = JURI::root() . 'plugins/vmpayment/paysto/images/';
             if (!is_array($logo_list)) {
                 $logo_list = (array)$logo_list;
             }
@@ -299,14 +299,14 @@ class plgVMPaymentPaysto extends vmPSPlugin
     {
         $get = JRequest::get();
 
-        if ($get['action'] == 'paymaster_success') {
+        if ($get['action'] == 'paysto_success') {
             if (!class_exists('VirtueMartCart'))
                 require(JPATH_VM_SITE . DS . 'helpers' . DS . 'cart.php');
             $cart = VirtueMartCart::getCart();
             $cart->emptyCart();
 
             return true;
-        } else if ($get['action'] == 'paymaster_result') {
+        } else if ($get['action'] == 'paysto_result') {
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (isset($_POST["LMI_PREREQUEST"]) && ($_POST["LMI_PREREQUEST"] == "1" || $_POST["LMI_PREREQUEST"] == "2")) {
                     echo "YES";

@@ -9,7 +9,7 @@ class JFormFieldGetPaysto extends JFormField {
     protected function getInput() {
         JHtml::_('behavior.colorpicker');
 
-        vmJsApi::addJScript( '/plugins/vmpayment/paymaster/assets/js/admin.js');
+        vmJsApi::addJScript( '/plugins/vmpayment/paysto/assets/js/admin.js');
 
         $url = "https://www.paysto.ru";
         $html = '<h1><a target="_blank" href="'. $url .'">Paysto</a></h1>';

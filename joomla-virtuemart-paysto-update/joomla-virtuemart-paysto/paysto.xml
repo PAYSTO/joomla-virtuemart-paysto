@@ -8,16 +8,16 @@
     <version>2.0.1</version>
     <description>Paysto Payment Plugin</description>
     <files>
-        <filename plugin="paymaster">paymaster.php</filename>
+        <filename plugin="paysto">paysto.php</filename>
         <folder>images</folder>
     </files>
     <languages>
-        <language tag="ru-RU">ru-RU.plg_vmpayment_paymaster.ini</language>
+        <language tag="ru-RU">ru-RU.plg_vmpayment_paysto.ini</language>
     </languages>
     <vmconfig>
-        <fields name="params" addfieldpath="/plugins/vmpayment/paymaster/fields">
+        <fields name="params" addfieldpath="/plugins/vmpayment/paysto/fields">
             <fieldset name="basic">
-                <field type="getpaymaster" default=""/>
+                <field type="getpaysto" default=""/>
                 <field name="list_tax"
                        type="repeatable"
                        buttons= "add,remove"
@@ -45,7 +45,7 @@
                     </fieldset>
                 </field>
                 <field name="payment_logos" scope="com_virtuemart" type="vmfiles" label="PLG_PAYMASTER_VM3_LOGO"
-                       directory="/plugins/vmpayment/paymaster/images"
+                       directory="/plugins/vmpayment/paysto/images"
                        default="default" hide_default="1" hide_none="1" stripext="0" exclude="^_"/>
                 <field name="merchant_id" type="text" label="PLG_PAYMASTER_VM3_MERCHANT_ID"/>
                 <field name="secret_key" type="text" label="PLG_PAYMASTER_VM3_SECRET_KRY"/>
