@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="3.0" type="plugin" group="vmpayment" method="upgrade">
+    <name>Paysto</name>
+    <author>Markus Shmidt</author>
+    <creationDate>December 2015</creationDate>
+    <authorEmail>markus.shmmidt@yandex.ru</authorEmail>
+    <license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
+    <version>2.0.1</version>
+    <description>Paysto Payment Plugin</description>
+    <files>
+        <filename plugin="paymaster">paymaster.php</filename>
+        <folder>images</folder>
+    </files>
+    <languages>
+        <language tag="ru-RU">ru-RU.plg_vmpayment_paymaster.ini</language>
+    </languages>
+    <vmconfig>
+        <fields name="params" addfieldpath="/plugins/vmpayment/paymaster/fields">
+            <fieldset name="basic">
+                <field type="getpaymaster" default=""/>
+                <field name="list_tax"
+                       type="repeatable"
+                       buttons= "add,remove"
+                       icon="list"
+                       description="PLG_TINY_FIELD_TEMPLATE_FIELD_ELEMENTS_DESC"
+                       label="PLG_PAYMASTER_VM3_NDS">
+                    <fieldset  name="list_tax_modal" repeat="true">
+                        <field  name="vat"
+                                type="sql"
+                                label="Налог"
+                                query="SELECT calc_name FROM #__virtuemart_calcs WHERE calc_kind='VatTax'"
+                                key_field="calc_name"
+                                value_field="calc_name"
+                                required="false">
+                        </field>
+                        <field name="tax" type="list" default="0" label="Ставка ндс" search="false" >
+                            <option value="vat18">18</option>
+                            <option value="vat10">10</option>
+                            <option value="vat0">0</option>
+                            <option value="no_vat">no</option>
+                            <option value="vat118">18/118</option>
+                            <option value="vat110">10/110</option>
+                        </field>
+
+                    </fieldset>
+                </field>
+                <field name="payment_logos" scope="com_virtuemart" type="vmfiles" label="PLG_PAYMASTER_VM3_LOGO"
+                       directory="/plugins/vmpayment/paymaster/images"
+                       default="default" hide_default="1" hide_none="1" stripext="0" exclude="^_"/>
+                <field name="merchant_id" type="text" label="PLG_PAYMASTER_VM3_MERCHANT_ID"/>
+                <field name="secret_key" type="text" label="PLG_PAYMASTER_VM3_SECRET_KRY"/>
+
+                <field name="status_success" type="vmorderstate" scope="com_virtuemart" default="C"
+                       label="PLG_PAYMASTER_VM3_STATUS_SUCCESS"
+                       description="PLG_PAYMASTER_VM3_STATUS_SUCCESS_EXPLAIN"/>
+                <field name="status_pending" type="vmorderstate" scope="com_virtuemart" default="P"
+                       label="PLG_PAYMASTER_VM3_STATUS_PENDING"
+                       description="PLG_PAYMASTER_VM3_STATUS_PENDING_EXPLAIN"/>
+                <field name="status_canceled" type="vmorderstate" scope="com_virtuemart" default="X"
+                       label="PLG_PAYMASTER_VM3_STATUS_FAILED"
+                       description="PLG_PAYMASTER_VM3_STATUS_FAILED_EXPLAIN"/>
+            </fieldset>
+        </fields>
+    </vmconfig>
+</extension>
