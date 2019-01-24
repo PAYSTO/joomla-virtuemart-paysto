@@ -23,7 +23,7 @@
                        buttons= "add,remove"
                        icon="list"
                        description="PLG_TINY_FIELD_TEMPLATE_FIELD_ELEMENTS_DESC"
-                       label="PLG_PAYMASTER_VM3_NDS">
+                       label="PLG_PAYSTO_VM3_NDS">
                     <fieldset  name="list_tax_modal" repeat="true">
                         <field  name="vat"
                                 type="sql"
@@ -34,31 +34,27 @@
                                 required="false">
                         </field>
                         <field name="tax" type="list" default="0" label="Ставка ндс" search="false" >
-                            <option value="vat18">18</option>
-                            <option value="vat10">10</option>
-                            <option value="vat0">0</option>
-                            <option value="no_vat">no</option>
-                            <option value="vat118">18/118</option>
-                            <option value="vat110">10/110</option>
+                            <option value="Y">With VAT</option>
+                            <option value="N">Without VAT</option>
                         </field>
 
                     </fieldset>
                 </field>
-                <field name="payment_logos" scope="com_virtuemart" type="vmfiles" label="PLG_PAYMASTER_VM3_LOGO"
+                <field name="payment_logos" scope="com_virtuemart" type="vmfiles" label="PLG_PAYSTO_VM3_LOGO"
                        directory="/plugins/vmpayment/paysto/images"
                        default="default" hide_default="1" hide_none="1" stripext="0" exclude="^_"/>
-                <field name="merchant_id" type="text" label="PLG_PAYMASTER_VM3_MERCHANT_ID"/>
-                <field name="secret_key" type="text" label="PLG_PAYMASTER_VM3_SECRET_KRY"/>
+                <field name="merchant_id" type="text" label="PLG_PAYSTO_VM3_MERCHANT_ID"/>
+                <field name="secret_key" type="text" label="PLG_PAYSTO_VM3_SECRET_KRY"/>
 
                 <field name="status_success" type="vmorderstate" scope="com_virtuemart" default="C"
-                       label="PLG_PAYMASTER_VM3_STATUS_SUCCESS"
-                       description="PLG_PAYMASTER_VM3_STATUS_SUCCESS_EXPLAIN"/>
+                       label="PLG_PAYSTO_VM3_STATUS_SUCCESS"
+                       description="PLG_PAYSTO_VM3_STATUS_SUCCESS_EXPLAIN"/>
                 <field name="status_pending" type="vmorderstate" scope="com_virtuemart" default="P"
-                       label="PLG_PAYMASTER_VM3_STATUS_PENDING"
-                       description="PLG_PAYMASTER_VM3_STATUS_PENDING_EXPLAIN"/>
+                       label="PLG_PAYSTO_VM3_STATUS_PENDING"
+                       description="PLG_PAYSTO_VM3_STATUS_PENDING_EXPLAIN"/>
                 <field name="status_canceled" type="vmorderstate" scope="com_virtuemart" default="X"
-                       label="PLG_PAYMASTER_VM3_STATUS_FAILED"
-                       description="PLG_PAYMASTER_VM3_STATUS_FAILED_EXPLAIN"/>
+                       label="PLG_PAYSTO_VM3_STATUS_FAILED"
+                       description="PLG_PAYSTO_VM3_STATUS_FAILED_EXPLAIN"/>
             </fieldset>
         </fields>
     </vmconfig>
