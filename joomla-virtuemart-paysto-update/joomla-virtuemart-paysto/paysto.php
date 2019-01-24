@@ -340,7 +340,40 @@ class plgVMPaymentPaysto extends vmPSPlugin
             die;
         }
     }
+    
+    
+    /**
+     * Return hash md5 HMAC
+     *
+     * @param $x_login
+     * @param $x_fp_sequence
+     * @param $x_fp_timestamp
+     * @param $x_amount
+     * @param $x_currency_code
+     * @return false|string
+     */
+    private function get_x_fp_hash($x_login, $x_fp_sequence, $x_fp_timestamp, $x_amount, $x_currency_code)
+    {
+        $arr = [$x_login, $x_fp_sequence, $x_fp_timestamp, $x_amount, $x_currency_code];
+        $str = implode('^', $arr);
+        return hash_hmac('md5', $str, $this->config->get('paysto_secret_key'));
+    }
+    
+    
+    /**
+     * Return sign with MD5 algoritm
+     *
+     * @param $x_login
+     * @param $x_trans_id
+     * @param $x_amount
+     * @return string
+     */
+    private function get_x_MD5_Hash($x_login, $x_trans_id, $x_amount)
+    {
+        return md5($this->config->get('paysto_secret_key') . $x_login . $x_trans_id . $x_amount);
+    }
 
+    
     private function getBasketDetails(){
         $user = JFactory::getUser();
         $cart = VirtueMartCart::getCart(false);
