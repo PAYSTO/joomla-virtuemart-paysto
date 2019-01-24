@@ -7,10 +7,17 @@ if (!class_exists('vmPSPlugin')) {
 
 class plgVMPaymentPaysto extends vmPSPlugin
 {
-    const STATUS_TAX_OFF = 'no_vat';
+    
+    const STATUS_TAX_OFF = 'N';
     const MAX_POS_IN_CHECK = 100;
     const BEGIN_POS_IN_CHECK = 0;
-
+    
+    /**
+     * plgVMPaymentPaysto constructor.
+     * @param $subject
+     * @param $config
+     *
+     */
     function __construct(&$subject, $config)
     {
 
