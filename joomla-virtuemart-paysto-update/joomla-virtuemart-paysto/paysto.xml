@@ -48,7 +48,7 @@
                 <field name="merchant_id" type="text" label="PLG_PAYSTO_VM3_MERCHANT_ID"/>
                 <field name="secret_key" type="text" label="PLG_PAYSTO_VM3_SECRET_KRY"/>
                 <field name="description" type="textarea" label="PLG_PAYSTO_VM3_DESCRIPTION"/>
-                <field name="mytextarea" type="textarea" default="default" label="PLG_PAYSTO_VM3_" description="" rows="10" cols="5" filter="raw"/>
+                <field name="serversList" type="textarea" default="95.213.209.218 95.213.209.219 95.213.209.220 95.213.209.221 95.213.209.222" label="PLG_PAYSTO_VM3_SERVERSLIST" description="Разделитель пробел" rows="10" cols="5"/>
             </fieldset>
         </fields>
     </vmconfig>
