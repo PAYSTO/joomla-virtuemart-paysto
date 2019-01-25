@@ -48,6 +48,7 @@
                 <field name="merchant_id" type="text" label="PLG_PAYSTO_VM3_MERCHANT_ID"/>
                 <field name="secret_key" type="text" label="PLG_PAYSTO_VM3_SECRET_KRY"/>
                 <field name="description" type="textarea" label="PLG_PAYSTO_VM3_DESCRIPTION"/>
+                <field name="mytextarea" type="textarea" default="default" label="PLG_PAYSTO_VM3_" description="" rows="10" cols="5" filter="raw"/>
             </fieldset>
         </fields>
     </vmconfig>

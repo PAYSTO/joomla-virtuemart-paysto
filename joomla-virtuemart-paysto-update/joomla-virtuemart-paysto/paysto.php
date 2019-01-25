@@ -29,12 +29,19 @@ class plgVMPaymentPaysto extends vmPSPlugin
         $varsToPush = $this->getVarsToPush();
         $this->setConfigParameterable($this->_configTableFieldName, $varsToPush);
     }
-
+    
+    
+    /**
+     *
+     *
+     * @return mixed
+     */
     function getVmPluginCreateTableSQL()
     {
         return $this->createTableSQL('Payment Paysto Table');
     }
 
+    
     function getTableSQLFields()
     {
         $SQLfields = array(
@@ -73,7 +80,15 @@ class plgVMPaymentPaysto extends vmPSPlugin
 
         return self::STATUS_TAX_OFF;
     }
-
+    
+    
+    /**
+     *
+     *
+     * @param VirtueMartCart $cart
+     * @param $order
+     * @return bool|null
+     */
     function plgVmConfirmedOrder(VirtueMartCart $cart, $order)
     {
         if (!($method = $this->getVmPluginMethod($order['details']['BT']->virtuemart_paymentmethod_id))) {
@@ -82,9 +97,7 @@ class plgVMPaymentPaysto extends vmPSPlugin
         if (!$this->selectedThisElement($method->payment_element)) {
             return FALSE;
         }
-
-       // var_dump($order);exit;
-
+        
         $pos = self::BEGIN_POS_IN_CHECK;
         $order_check = array();
         $tax_shipping = self::STATUS_TAX_OFF;
