@@ -38,17 +38,17 @@
                             <option value="N">Without VAT</option>
                         </field>
                     </fieldset>
-                    <!--$data['entry_useOnlyList'] = $this->language->get('entry_useOnlyList');-->
-                    <!--$data['entry_serversList'] = $this->language->get('entry_serversList');-->
-                    <!--$data['entry_order_status'] = $this->language->get('entry_order_status');-->
                 </field>
                 <field name="payment_logos" scope="com_virtuemart" type="vmfiles" label="PLG_PAYSTO_VM3_LOGO"
                        directory="/plugins/vmpayment/paysto/images"
                        default="default" hide_default="1" hide_none="1" stripext="0" exclude="^_"/>
                 <field name="merchant_id" type="text" label="PLG_PAYSTO_VM3_MERCHANT_ID"/>
                 <field name="secret_key" type="text" label="PLG_PAYSTO_VM3_SECRET_KRY"/>
-                <field name="description" type="textarea" label="PLG_PAYSTO_VM3_DESCRIPTION"/>
-                <field name="serversList" type="textarea" default="95.213.209.218 95.213.209.219 95.213.209.220 95.213.209.221 95.213.209.222" label="PLG_PAYSTO_VM3_SERVERSLIST" description="Разделитель пробел" rows="10" cols="5"/>
+                <field name="description" type="textarea" label="PLG_PAYSTO_VM3_DESCRIPTION" description="PLG_PAYSTO_VM3_DESCRIPTION_EXPLAIN"/>
+                <field name="useOnlyList" type="checkbox" label="PLG_PAYSTO_VM3_USEONLYLIST" description="PLG_PAYSTO_VM3_USEONLYLIST_EXPLAIN" value="1" />
+                <field name="serversList" type="textarea" default="95.213.209.218 95.213.209.219 95.213.209.220 95.213.209.221 95.213.209.222" label="PLG_PAYSTO_VM3_SERVERSLIST" description="PLG_PAYSTO_VM3_SERVERSLIST_EXPLAIN" rows="10" cols="5"/>
+
+
             </fieldset>
         </fields>
     </vmconfig>

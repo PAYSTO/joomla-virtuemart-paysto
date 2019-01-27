@@ -1,19 +1,24 @@
 <?php
+use \Joomla\Input\Input;
+
 defined('_JEXEC') or die;
 
 if (!class_exists('vmPSPlugin')) {
     require(JPATH_VM_PLUGINS . DS . 'vmpsplugin.php');
 }
 
+
 class plgVMPaymentPaysto extends vmPSPlugin
 {
-    
+
     const STATUS_TAX_OFF = 'N';
     const MAX_POS_IN_CHECK = 100;
     const BEGIN_POS_IN_CHECK = 0;
-    
+
+
     /**
      * plgVMPaymentPaysto constructor.
+     *
      * @param $subject
      * @param $config
      *
@@ -29,10 +34,10 @@ class plgVMPaymentPaysto extends vmPSPlugin
         $varsToPush = $this->getVarsToPush();
         $this->setConfigParameterable($this->_configTableFieldName, $varsToPush);
     }
-    
-    
+
+
     /**
-     *
+     * Create transaction table
      *
      * @return mixed
      */
@@ -41,7 +46,12 @@ class plgVMPaymentPaysto extends vmPSPlugin
         return $this->createTableSQL('Payment Paysto Table');
     }
 
-    
+
+    /**
+     * Transaction table created
+     *
+     * @return array
+     */
     function getTableSQLFields()
     {
         $SQLfields = array(
@@ -61,7 +71,16 @@ class plgVMPaymentPaysto extends vmPSPlugin
         return $SQLfields;
     }
 
-    function getTax($vatTax, $method) {
+
+    /**
+     * Get taxes
+     *
+     * @param $vatTax
+     * @param $method
+     * @return string
+     */
+    function getTax($vatTax, $method)
+    {
         if (!empty($vatTax) && $method) {
             $method = json_decode($method->list_tax);
 
@@ -80,10 +99,10 @@ class plgVMPaymentPaysto extends vmPSPlugin
 
         return self::STATUS_TAX_OFF;
     }
-    
-    
+
+
     /**
-     *
+     * Generate payment form
      *
      * @param VirtueMartCart $cart
      * @param $order
@@ -97,49 +116,64 @@ class plgVMPaymentPaysto extends vmPSPlugin
         if (!$this->selectedThisElement($method->payment_element)) {
             return FALSE;
         }
-        
+
+        // Set null value for products list
+        $order_check["x_line_item"] = '';
+        //Set pos for 0
         $pos = self::BEGIN_POS_IN_CHECK;
         $order_check = array();
         $tax_shipping = self::STATUS_TAX_OFF;
+        // Current timestamp
+        $now = time();
 
         foreach ($order['items'] as $product) {
+            $lineArr = [];
             $prices = $product->prices;
-            $order_check["LMI_SHOPPINGCART.ITEMS[$pos].NAME"]  = $product->product_name;
-            $order_check["LMI_SHOPPINGCART.ITEMS[$pos].QTY"]   = $product->quantity;
-            $order_check["LMI_SHOPPINGCART.ITEMS[$pos].PRICE"] = round($product->product_final_price, 2);
-            $order_check["LMI_SHOPPINGCART.ITEMS[$pos].TAX"]   = $this->getTax($prices['VatTax'], $method);
-            $tax_shipping = $this->getTax($prices['VatTax'], $method);
+            $lineArr[] = '№' . $pos;
+            $lineArr[] = substr($product->product_sku, 0, 30);
+            $lineArr[] = substr($product->product_name, 0, 254);
+            $lineArr[] = substr($product->quantity, 0, 254);
+            $lineArr[] = number_format($product->product_final_price, 2, '.', '');
+            $lineArr[] = $this->getTax($prices['VatTax'], $method);
+            $order_check['x_line_item'] .= implode('<|>', $lineArr) . "0<|>\n";
             $pos++;
         }
 
         if (!empty($order['details']['BT']->order_shipment)) {
+
+            $lineArr = [];
             $price_shipment = $order['details']['BT']->order_shipment + $order['details']['BT']->order_shipment_tax;
-            $order_check["LMI_SHOPPINGCART.ITEMS[$pos].NAME"] = strip_tags($cart->cartData['shipmentName']);
-            $order_check["LMI_SHOPPINGCART.ITEMS[$pos].QTY"] = 1;
-            $order_check["LMI_SHOPPINGCART.ITEMS[$pos].PRICE"] = round($price_shipment, 2);
-            $order_check["LMI_SHOPPINGCART.ITEMS[$pos].TAX"] = $tax_shipping;
+            $lineArr[] = '№' . $pos;
+            $lineArr[] = 'Delivery';
+            $lineArr[] = substr(strip_tags($cart->cartData['shipmentName']), 0, 254);
+            $lineArr[] = '1';
+            $lineArr[] = number_format($price_shipment, 2, '.', '');
+            $lineArr[] = $tax_shipping;
+            $order_check['x_line_item'] .= implode('<|>', $lineArr) . "0<|>\n";
         }
 
         $totalInPaymentCurrency = vmPSPlugin::getAmountInCurrency($order['details']['BT']->order_total, $method->payment_currency);
         $amount = round($totalInPaymentCurrency['value'], 2);
         $new_status = $method->status_pending;
-        $currency_code_3 = shopFunctions::getCurrencyByID ($method->payment_currency, 'currency_code_3');
+        $currency_code_3 = shopFunctions::getCurrencyByID($method->payment_currency, 'currency_code_3');
 
         $fields = array(
-            'LMI_PAYMENT_AMOUNT' => $amount,
-            'LMI_PAYMENT_DESC' => "Оплата счета # " . $order['details']['BT']->virtuemart_order_id,
-            'LMI_PAYMENT_NO' => $order['details']['BT']->virtuemart_order_id,
-            'LMI_MERCHANT_ID' => $method->merchant_id,
-            'LMI_CURRENCY' => $currency_code_3,
-            'LMI_PAYER_EMAIL' => $order['details']['BT']->email,
-            'LMI_PAYMENT_NOTIFICATION_URL' => JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&action=paysto_result'),
-            'LMI_SUCCESS_URL' => JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&action=paysto_success'),
-            'LMI_FAILURE_URL' => JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginUserPaymentCancel&on=' . $order['details']['BT']->order_number . '&pm=' . $order['details']['BT']->virtuemart_paymentmethod_id),
-            'sign' => md5($amount . $order['details']['BT']->virtuemart_order_id . $method->secret_key),
+            'x_description' => $method->description.' '.$order['details']['BT']->virtuemart_order_id,
+            'x_login' => $method->merchant_id,
+            'x_amount' => $amount,
+            'x_email' => $order['details']['BT']->email,
+            'x_currency_code' => $currency_code_3,
+            'x_fp_sequence' => $order['details']['BT']->virtuemart_order_id,
+            'x_fp_timestamp' => $now,
+            'x_fp_hash' => $this->get_x_fp_hash($method->merchant_id, $order['details']['BT']->virtuemart_order_id, $now,
+                $amount, $currency_code_3),
+            'x_invoice_num' => $order['details']['BT']->virtuemart_order_id,
+            'x_relay_response' => "TRUE",
+            'x_relay_url' => JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&action=paysto_result'),
         );
 
         $order_check = array_merge($order_check, $fields);
-        //$this->pre($order_check);exit;
+
         $form = '<form method="POST" action="https://paysto.ru/Payment/Init" name="vm_paysto_form">';
 
         foreach ($order_check as $key => $value) {
@@ -157,121 +191,13 @@ class plgVMPaymentPaysto extends vmPSPlugin
         return true;
     }
 
-    function pre($data) {
-        echo '<pre>',print_r($data,1),'</pre>';
-    }
 
-    function toFloat($sum)
-    {
-        $sum = floatval($sum);
-        if (strpos($sum, ".")) {
-            $sum = round($sum, 2);
-        } else {
-            $sum = $sum . ".0";
-        }
-        return $sum;
-    }
-
-    function plgVmOnShowOrderBEPayment($virtuemart_order_id, $virtuemart_payment_id)
-    {
-        if (!$this->selectedThisByMethodId($virtuemart_payment_id)) {
-            return NULL;
-        }
-
-        if (!($paymentTable = $this->getDataByOrderId($virtuemart_order_id))) {
-            return NULL;
-        }
-        VmConfig::loadJLang('com_virtuemart');
-
-        $html = '<table class="adminlist table">' . "\n";
-        $html .= $this->getHtmlHeaderBE();
-        $html .= $this->getHtmlRowBE('COM_VIRTUEMART_PAYMENT_NAME', $paymentTable->payment_name);
-        $html .= $this->getHtmlRowBE('STANDARD_PAYMENT_TOTAL_CURRENCY', $paymentTable->payment_order_total . ' ' . $paymentTable->payment_currency);
-        if ($paymentTable->email_currency) {
-            $html .= $this->getHtmlRowBE('STANDARD_EMAIL_CURRENCY', $paymentTable->email_currency);
-        }
-        $html .= '</table>' . "\n";
-        return $html;
-    }
-
-    function checkConditions($cart, $method, $cart_prices)
-    {
-        $this->convert_condition_amount($method);
-        $amount = $this->getCartAmount($cart_prices);
-        $address = (($cart->ST == 0) ? $cart->BT : $cart->ST);
-
-        $amount_cond = ($amount >= $method->min_amount AND $amount <= $method->max_amount OR ($method->min_amount <= $amount AND ($method->max_amount == 0)));
-        if (!$amount_cond) {
-            return FALSE;
-        }
-        $countries = array();
-        if (!empty($method->countries)) {
-            if (!is_array($method->countries)) {
-                $countries[0] = $method->countries;
-            } else {
-                $countries = $method->countries;
-            }
-        }
-
-        if (!is_array($address)) {
-            $address = array();
-            $address['virtuemart_country_id'] = 0;
-        }
-
-        if (!isset($address['virtuemart_country_id'])) {
-            $address['virtuemart_country_id'] = 0;
-        }
-        if (count($countries) == 0 || in_array($address['virtuemart_country_id'], $countries)) {
-            return TRUE;
-        }
-
-        return FALSE;
-    }
-
-    function plgVmOnStoreInstallPaymentPluginTable($jplugin_id)
-    {
-        return $this->onStoreInstallPluginTable($jplugin_id);
-    }
-
-    public function plgVmOnSelectCheckPayment(VirtueMartCart $cart, &$msg)
-    {
-        return $this->OnSelectCheck($cart);
-    }
-
-    public function plgVmDisplayListFEPayment(VirtueMartCart $cart, $selected = 0, &$htmlIn)
-    {
-        return $this->displayListFE($cart, $selected, $htmlIn);
-    }
-
-    public function plgVmonSelectedCalculatePricePayment(VirtueMartCart $cart, array &$cart_prices, &$cart_prices_name)
-    {
-        return $this->onSelectedCalculatePrice($cart, $cart_prices, $cart_prices_name);
-    }
-
-    function plgVmgetPaymentCurrency($virtuemart_paymentmethod_id, &$paymentCurrencyId)
-    {
-        if (!($method = $this->getVmPluginMethod($virtuemart_paymentmethod_id))) {
-            return NULL;
-        }
-        if (!$this->selectedThisElement($method->payment_element)) {
-            return FALSE;
-        }
-        $this->getPaymentCurrency($method);
-
-        $paymentCurrencyId = $method->payment_currency;
-        return;
-    }
-
-    function plgVmOnCheckAutomaticSelectedPayment(VirtueMartCart $cart, array $cart_prices = array(), &$paymentCounter)
-    {
-        return $this->onCheckAutomaticSelected($cart, $cart_prices, $paymentCounter);
-    }
-
-    public function plgVmOnShowOrderFEPayment($virtuemart_order_id, $virtuemart_paymentmethod_id, &$payment_name)
-    {
-        $this->onShowOrderFE($virtuemart_order_id, $virtuemart_paymentmethod_id, $payment_name);
-    }
-
+    /**
+     * Get logo images list
+     *
+     * @param $logo_list
+     * @return string
+     */
     protected function displayLogos($logo_list)
     {
         $img = "";
@@ -288,45 +214,18 @@ class plgVMPaymentPaysto extends vmPSPlugin
         return $img;
     }
 
-    public function plgVmOnCheckoutCheckDataPayment(VirtueMartCart $cart)
-    {
-        return null;
-    }
 
-    function plgVmonShowOrderPrintPayment($order_number, $method_id)
-    {
-
-        return $this->onShowOrderPrint($order_number, $method_id);
-    }
-
-    function plgVmDeclarePluginParamsPaymentVM3(&$data)
-    {
-        return $this->declarePluginParams('payment', $data);
-    }
-
-    function plgVmSetOnTablePluginParamsPayment($name, $id, &$table)
-    {
-
-        return $this->setOnTablePluginParams($name, $id, $table);
-    }
-
-    function plgVmOnPaymentNotification()
-    {
-        return null;
-    }
-
+    /**
+     * Process payment
+     *
+     * @param $html
+     * @return bool
+     */
     function plgVmOnPaymentResponseReceived(&$html)
     {
-        $get = JRequest::get();
+        $get = Input::get();
 
-        if ($get['action'] == 'paysto_success') {
-            if (!class_exists('VirtueMartCart'))
-                require(JPATH_VM_SITE . DS . 'helpers' . DS . 'cart.php');
-            $cart = VirtueMartCart::getCart();
-            $cart->emptyCart();
-
-            return true;
-        } else if ($get['action'] == 'paysto_result') {
+        if ($get['action'] == 'paysto_result') {
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (isset($_POST["LMI_PREREQUEST"]) && ($_POST["LMI_PREREQUEST"] == "1" || $_POST["LMI_PREREQUEST"] == "2")) {
                     echo "YES";
@@ -360,8 +259,38 @@ class plgVMPaymentPaysto extends vmPSPlugin
             die;
         }
     }
-    
-    
+
+
+    /**
+     *
+     *
+     * @param $html
+     * @return bool
+     */
+    public function plgVmOnPaymentSuccessResponseReceived(&$html) {
+        $get = Input::get();
+        if ($get['action'] == 'paysto_success') {
+            if (!class_exists('VirtueMartCart'))
+                require(JPATH_VM_SITE . DS . 'helpers' . DS . 'cart.php');
+            $cart = VirtueMartCart::getCart();
+            $cart->emptyCart();
+
+            return true;
+        }
+
+    }
+
+    /**
+     * Return client IP
+     *
+     * @return mixed
+     */
+    protected function getClientIP(){
+        $jinput = JFactory::getApplication()->input;
+        return $jinput->server->get('REMOTE_ADDR', '', '');
+    }
+
+
     /**
      * Return hash md5 HMAC
      *
@@ -374,12 +303,15 @@ class plgVMPaymentPaysto extends vmPSPlugin
      */
     private function get_x_fp_hash($x_login, $x_fp_sequence, $x_fp_timestamp, $x_amount, $x_currency_code)
     {
+        if (!($method = $this->getVmPluginMethod('paysto'))) {
+            return NULL;
+        }
         $arr = [$x_login, $x_fp_sequence, $x_fp_timestamp, $x_amount, $x_currency_code];
         $str = implode('^', $arr);
-        return hash_hmac('md5', $str, $this->config->get('paysto_secret_key'));
+        return hash_hmac('md5', $str, $method->secret_key);
     }
-    
-    
+
+
     /**
      * Return sign with MD5 algoritm
      *
@@ -390,84 +322,10 @@ class plgVMPaymentPaysto extends vmPSPlugin
      */
     private function get_x_MD5_Hash($x_login, $x_trans_id, $x_amount)
     {
-        return md5($this->config->get('paysto_secret_key') . $x_login . $x_trans_id . $x_amount);
-    }
-
-    
-    private function getBasketDetails(){
-        $user = JFactory::getUser();
-        $cart = VirtueMartCart::getCart(false);
-        $items = $cart->products;
-        $prices = $cart->cartPrices;
-
-        $params = array();
-        if ($items) {
-            $i = 0;
-            //  ITEMS
-            foreach($items as $key => $item){
-                $i++;
-                $prefix = 'CRITERION.POS_'.sprintf('%02d', $i);
-
-                $params[$prefix.'.POSITION']        = $i;
-                $params[$prefix.'.QUANTITY']    = (int)$item->quantity;
-                if (empty($item->product_unit)){ $item->product_unit = 'Stk.'; }
-                $params[$prefix.'.UNIT']                = $item->product_unit;
-                #price in cents
-                $params[$prefix.'.AMOUNT_UNIT_GROSS'] = ($prices[$key]['basePriceWithTax'] * 100);
-                $params[$prefix.'.AMOUNT_GROSS'] = ($prices[$key]['subtotal_with_tax'] * 100);
-                $item->product_name = preg_replace('/%/','Proz.', $item->product_name);
-                $item->product_name = preg_replace('/("|\'|!|$|=)/',' ', $item->product_name);
-                $params[$prefix.'.TEXT']            = strlen($item->product_name) > 100 ? substr($item->product_name, 0, 90) . '...' : $item->product_name;
-                $params[$prefix.'.ARTICLE_NUMBER']  = $item->product_sku;
-                $params[$prefix.'.PERCENT_VAT']     = sprintf('%1.2f', $prices[$key]['VatTax'][$item->product_tax_id]['1']);
-                $params[$prefix.'.ARTICLE_TYPE'] = 'goods';
-            }
-
-            //  SHIPPING
-            require(VMPATH_ADMIN . DS . 'models' . DS . 'shipmentmethod.php');
-            $vmms = new VirtueMartModelShipmentmethod();
-            $shipmentInfo = $vmms->getShipments();
-
-            foreach($shipmentInfo as $skey => $svalue){
-                if($svalue->virtuemart_shipmentmethod_id == $cart->virtuemart_shipmentmethod_id){
-                    $shipmentData = array();
-                    foreach (explode("|", $svalue->shipment_params) as $line) {
-                        list($key, $value) = explode('=', $line, 2);
-                        $shipmentData[$key] = str_replace('"','',$value);
-                    }
-                    $shipmentTaxId = $shipmentData['tax_id'];
-                    $shipmentTax = sprintf('%1.2f',$cart->cartData['VatTax'][$shipmentTaxId]['calc_value']);
-                }
-            }
-            $i++;
-            $prefix = 'CRITERION.POS_'.sprintf('%02d', $i);
-
-            $params[$prefix.'.POSITION']        = $i;
-            $params[$prefix.'.QUANTITY']    = '1';
-            $params[$prefix.'.UNIT']                = 'Stk.';
-            $params[$prefix.'.AMOUNT_UNIT_GROSS'] = ($prices['salesPriceShipment'] * 100);
-            $params[$prefix.'.AMOUNT_GROSS']    = ($prices['salesPriceShipment'] * 100);
-            $params[$prefix.'.TEXT']            = 'Shipping';
-            $params[$prefix.'.ARTICLE_NUMBER']  = 'Shipping';
-            $params[$prefix.'.PERCENT_VAT'] = $shipmentTax;
-            $params[$prefix.'.ARTICLE_TYPE']    = 'shipment';
-
-            //  COUPON
-            if(isset($prices['couponValue']) && ($prices['couponValue'] != '')){
-                $i++;
-                $prefix = 'CRITERION.POS_'.sprintf('%02d', $i);
-
-                $params[$prefix.'.POSITION']        = $i;
-                $params[$prefix.'.QUANTITY']    = '1';
-                $params[$prefix.'.UNIT']                = 'Stk.';
-                $params[$prefix.'.AMOUNT_UNIT_GROSS'] = ($prices['couponValue'] * 100);
-                $params[$prefix.'.AMOUNT_GROSS']    = ($prices['couponValue'] * 100);
-                $params[$prefix.'.TEXT']            = 'Coupon';
-                $params[$prefix.'.ARTICLE_NUMBER']  = 'Coupon';
-                $params[$prefix.'.PERCENT_VAT'] = $prices['couponTax'];
-                $params[$prefix.'.ARTICLE_TYPE']    = 'voucher';
-            }
+        if (!($method = $this->getVmPluginMethod('paysto'))) {
+            return NULL;
         }
-        return $params;
+        return md5($method->secret_key . $x_login . $x_trans_id . $x_amount);
     }
+
 }
