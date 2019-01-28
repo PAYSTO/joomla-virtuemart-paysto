@@ -49,14 +49,14 @@
                 <field name="useOnlyList" type="checkbox" label="PLG_PAYSTO_VM3_USEONLYLIST" description="PLG_PAYSTO_VM3_USEONLYLIST_EXPLAIN" value="1" />
                 <field name="serversList" type="textarea" default="95.213.209.218 95.213.209.219 95.213.209.220 95.213.209.221 95.213.209.222" label="PLG_PAYSTO_VM3_SERVERSLIST" description="PLG_PAYSTO_VM3_SERVERSLIST_EXPLAIN" rows="10" cols="5"/>
                 <field name="status_success" type="vmorderstate" scope="com_virtuemart" default="C"
-                       label="PLG_PAYMASTER_VM3_STATUS_SUCCESS"
-                       description="PLG_PAYMASTER_VM3_STATUS_SUCCESS_EXPLAIN"/>
+                       label="PLG_PAYSTO_VM3_STATUS_SUCCESS"
+                       description="PLG_PAYSTO_VM3_STATUS_SUCCESS_EXPLAIN"/>
                 <field name="status_pending" type="vmorderstate" scope="com_virtuemart" default="P"
-                       label="PLG_PAYMASTER_VM3_STATUS_PENDING"
-                       description="PLG_PAYMASTER_VM3_STATUS_PENDING_EXPLAIN"/>
+                       label="PLG_PAYSTO_VM3_STATUS_PENDING"
+                       description="PLG_PAYSTO_VM3_STATUS_PENDING_EXPLAIN"/>
                 <field name="status_canceled" type="vmorderstate" scope="com_virtuemart" default="X"
-                       label="PLG_PAYMASTER_VM3_STATUS_FAILED"
-                       description="PLG_PAYMASTER_VM3_STATUS_FAILED_EXPLAIN"/>
+                       label="PLG_PAYSTO_VM3_STATUS_FAILED"
+                       description="PLG_PAYSTO_VM3_STATUS_FAILED_EXPLAIN"/>
             </fieldset>
         </fields>
     </vmconfig>
