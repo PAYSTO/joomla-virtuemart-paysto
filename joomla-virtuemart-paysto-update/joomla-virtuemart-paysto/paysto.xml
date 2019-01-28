@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension version="3.0" type="plugin" group="vmpayment" method="upgrade">
     <name>Paysto</name>
-    <author>Markus Shmidt</author>
-    <creationDate>December 2015</creationDate>
-    <authorEmail>markus.shmmidt@yandex.ru</authorEmail>
+    <author>Alexey Agafonov</author>
+    <creationDate>December 2018</creationDate>
+    <authorEmail>dev@agaxx.ru</authorEmail>
     <license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
-    <version>2.0.1</version>
+    <version>1.0.0</version>
     <description>Paysto Payment Plugin</description>
     <files>
         <filename plugin="paysto">paysto.php</filename>
@@ -44,11 +44,19 @@
                        default="default" hide_default="1" hide_none="1" stripext="0" exclude="^_"/>
                 <field name="merchant_id" type="text" label="PLG_PAYSTO_VM3_MERCHANT_ID"/>
                 <field name="secret_key" type="text" label="PLG_PAYSTO_VM3_SECRET_KRY"/>
+                <field name="order_prefix" type="text" label="PLG_PAYSTO_VM3_ORDER_PREFIX" description="PLG_PAYSTO_VM3_ORDER_PREFIX_EXPLAIN" default="VM-"/>
                 <field name="description" type="textarea" label="PLG_PAYSTO_VM3_DESCRIPTION" description="PLG_PAYSTO_VM3_DESCRIPTION_EXPLAIN"/>
                 <field name="useOnlyList" type="checkbox" label="PLG_PAYSTO_VM3_USEONLYLIST" description="PLG_PAYSTO_VM3_USEONLYLIST_EXPLAIN" value="1" />
                 <field name="serversList" type="textarea" default="95.213.209.218 95.213.209.219 95.213.209.220 95.213.209.221 95.213.209.222" label="PLG_PAYSTO_VM3_SERVERSLIST" description="PLG_PAYSTO_VM3_SERVERSLIST_EXPLAIN" rows="10" cols="5"/>
-
-
+                <field name="status_success" type="vmorderstate" scope="com_virtuemart" default="C"
+                       label="PLG_PAYMASTER_VM3_STATUS_SUCCESS"
+                       description="PLG_PAYMASTER_VM3_STATUS_SUCCESS_EXPLAIN"/>
+                <field name="status_pending" type="vmorderstate" scope="com_virtuemart" default="P"
+                       label="PLG_PAYMASTER_VM3_STATUS_PENDING"
+                       description="PLG_PAYMASTER_VM3_STATUS_PENDING_EXPLAIN"/>
+                <field name="status_canceled" type="vmorderstate" scope="com_virtuemart" default="X"
+                       label="PLG_PAYMASTER_VM3_STATUS_FAILED"
+                       description="PLG_PAYMASTER_VM3_STATUS_FAILED_EXPLAIN"/>
             </fieldset>
         </fields>
     </vmconfig>
