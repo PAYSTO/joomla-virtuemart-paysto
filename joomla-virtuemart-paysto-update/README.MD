@@ -1,5 +1,5 @@
-Instructions for installing and configuring the module Paysto
-Joomla v3.3 + VirtueMart 3.0.3 and higher
+Instructions for installing and configuring the module Paysto Joomla + VirtueMart 
+
 1. Installation:
     1.1 Download the archive from the repository.
     1.2 In Joomla Administrator -> Extensions -> Extensions Manager
@@ -26,9 +26,11 @@ http: // YOURSITE.ru/index.php? option = com_virtuemart & view = pluginresponse 
 2. Turn on the module
 3. We accept payments
 
+
 //-----------------------------------------------------------------------------------------/
-Инструкция по установке и настройке модуля Paysto
-Joomla v3.3+VirtueMart 3.0.3 и выше
+
+
+Инструкция по установке и настройке модуля Paysto Joomla + VirtueMart
 1. Установка:
     1.1 Скачиваем  архив с репозитория.
     1.2 В Joomla Administrator -> Расширения -> Менеджер расширений 
