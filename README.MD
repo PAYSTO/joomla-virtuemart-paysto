@@ -30,6 +30,11 @@ yoursite.ru/administrator/index.php?option=com_virtuemart&view=paymentmethod
 
 ### Инструкция по установке и настройке модуля Paysto Joomla + VirtueMart
 
+Joomla: 3.3+
+VirtueMart: 3.0+ 
+
+Demo: http://joomla.ultraweb.ru
+
 1. Скачиваем  архив с репозитория.
 1. В Joomla Administrator -> Расширения -> Менеджер расширений ваш_сайт.ру/administrator/index.php?option=com_installer устанавливаем тут скачанный архив;
 1. В способах оплаты добавить способ и выбрать Paysto.
