@@ -16,7 +16,6 @@ Choose the created method Paysto
 And go to the configuration tab.
 Enter your data from your Paysto account in the store ID and Secret Key fields.
 
-1. To work with the online cashier: Add tax classes only 2 (with VAT and excluding VAT)
 2. Turn on the module
 3. We accept payments
 
@@ -39,6 +38,5 @@ Enter your data from your Paysto account in the store ID and Secret Key fields.
 И переходите во вкладку конфигурация.
 Введите в поля ID магазина и Secret Key свои данные из  личного кабинета Paysto.
 
-1. Для работы с онлайн-кассой: Добавляем налоговые классы их всего 2 ( с НДС и без НДС)
 2. Включаем модуль
 3. Принимаем оплату
