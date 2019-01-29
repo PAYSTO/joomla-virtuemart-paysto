@@ -17,7 +17,7 @@ yoursite.ru/administrator/index.php?option=com_virtuemart&view=paymentmethod
 yoursite.ru/administrator/index.php?option=com_virtuemart&view=paymentmethod
 1. Choose the created method Paysto 
 1. And go to the configuration tab.
-- Enter your data from your Paysto account in the store ID and Secret Key fields.
+	- Enter your data from your Paysto account in the store ID and Secret Key fields.
 2. Turn on the module
 3. We accept payments
 
@@ -29,7 +29,6 @@ yoursite.ru/administrator/index.php?option=com_virtuemart&view=paymentmethod
 
 
 ### Инструкция по установке и настройке модуля Paysto Joomla + VirtueMart
-
 Joomla: 3.3+
 VirtueMart: 3.0+ 
 
