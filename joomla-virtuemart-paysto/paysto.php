@@ -274,8 +274,19 @@ class plgVMPaymentPaysto extends vmPSPlugin
                 }
                 $method = $this->getVmPluginMethod($order['details']['BT']->virtuemart_paymentmethod_id);
                 $acceptServersList = explode(' ', $method->serversList);
+
+                $HTTP_X_FORWARDED_FOR = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '127.0.0.1';
+                $HTTP_CF_CONNECTING_IP = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : '127.0.0.1';
+                $HTTP_X_REAL_IP = isset($_SERVER['HTTP_X_REAL_IP']) ? $_SERVER['HTTP_X_REAL_IP'] : '127.0.0.1';
+                $REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+                $GEOIP_ADDR = isset($_SERVER['GEOIP_ADDR']) ? $_SERVER['GEOIP_ADDR'] : '127.0.0.1';
+
                 if ($method->useOnlyList &&
-                    !in_array($this->getClientIP(), $acceptServersList)) {
+                    ((!in_array($HTTP_X_FORWARDED_FOR, $this->PaystoServers)) &&
+                        (!in_array($HTTP_CF_CONNECTING_IP, $this->PaystoServers)) &&
+                        (!in_array($HTTP_X_REAL_IP, $this->PaystoServers)) &&
+                        (!in_array($REMOTE_ADDR, $this->PaystoServers)) &&
+                        (!in_array($GEOIP_ADDR, $this->PaystoServers)))) {
                     if ($order['details']['BT']->order_status == $method->status_success) {
                         if (!class_exists('VirtueMartCart')) {
                             require(JPATH_VM_SITE . DS . 'helpers' . DS . 'cart.php');
@@ -550,6 +561,7 @@ class plgVMPaymentPaysto extends vmPSPlugin
         }
         $string = date("Y-m-d H:i:s") . " - " . $text . ' - ' . $var . "\n";
         file_put_contents($loggerFile, $string, FILE_APPEND);
+        return;
     }
 
 }
