@@ -25,6 +25,7 @@ yoursite.ru/administrator/index.php?option=com_virtuemart&view=paymentmethod
 
 **Attention! Confirm that your store transmits the request in Russian rubles.**
 
+------------
 
 ### Инструкция по установке и настройке модуля Paysto Joomla + VirtueMart
 Joomla: 3.3+
